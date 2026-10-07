@@ -1,15 +1,29 @@
+import os
 import sqlite3
 from pathlib import Path
 
 
-DATABASE_PATH = (
+DEFAULT_DATABASE_PATH = (
     Path(__file__).resolve().parent
     / "calculator.db"
 )
 
 
+DATABASE_PATH = Path(
+    os.environ.get(
+        "DATABASE_PATH",
+        str(DEFAULT_DATABASE_PATH),
+    )
+)
+
+
 def get_connection():
     """创建 SQLite 数据库连接。"""
+
+    DATABASE_PATH.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
     connection = sqlite3.connect(
         DATABASE_PATH
@@ -94,7 +108,6 @@ def get_history():
             ORDER BY id DESC
             """
         ).fetchall()
-
 
         return [
             dict(row)
